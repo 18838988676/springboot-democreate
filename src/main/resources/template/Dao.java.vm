@@ -17,13 +17,13 @@ public interface ${className}Dao {
 	
 	List<${className}VO> list(Map<String, Object> params);
 
-	${className}VO selectById(String id);
+	${className}VO selectById(${pk.attrType} id);
 
-	Integer deleteById(Integer id);
+	Integer deleteById(${pk.attrType} id);
 
 	Integer updateById(${className}VO ${classname}VO);
 
-	Integer deleteByIds(List<String> asList);
+	Integer deleteByIds(List<${pk.attrType}> asList);
 
 	Integer insert(${className}VO ${classname}VO);
 	

@@ -53,14 +53,14 @@ public class CreateController {
 	}
 
 	/**
-	 * 生成代码
+	 * 生成
 	 */
 	@RequestMapping("/code")
 	public void code(String tables, HttpServletResponse response) throws IOException{
 		byte[] data = sysGeneratorService.generatorCode(tables.split(","));
 
 		response.reset();
-		response.setHeader("Content-Disposition", "attachment; filename=\"renren.zip\"");
+		response.setHeader("Content-Disposition", "attachment; filename=\"wmc.zip\"");
 		response.addHeader("Content-Length", "" + data.length);
 		response.setContentType("application/octet-stream; charset=UTF-8");
 

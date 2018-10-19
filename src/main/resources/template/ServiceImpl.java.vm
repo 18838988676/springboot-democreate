@@ -26,7 +26,7 @@ public class ${className}ServiceImpl{
   	 /**
      * 信息
      */
-  	public ${className}VO selectById(String id) {
+  	public ${className}VO selectById(${pk.attrType} id) {
 		return ${classname}Dao.selectById(id);
 	}
 	
@@ -55,7 +55,7 @@ public class ${className}ServiceImpl{
 	/**
      * 删除多个
      */
-	public Integer deleteByIds(List<String> ids) {
+	public Integer deleteByIds(List<${pk.attrType}> ids) {
 		return  ${classname}Dao.deleteByIds(ids);
 	}
 	

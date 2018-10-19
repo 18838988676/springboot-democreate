@@ -4,7 +4,7 @@
 <mapper namespace="${package}.dao.${className}Dao">
 
 	<!-- 可根据自己的需求，是否要使用 -->
-    <resultMap type="${className}VO" id="${classname}Map">
+    <resultMap type="${package}.entity.${className}VO" id="${classname}Map">
 #foreach($column in $columns)
         <result property="${column.attrname}" column="${column.columnName}"/>
 #end
@@ -12,13 +12,71 @@
 
 	 <sql id="Base_Column_List">
    		#foreach($column in $columns)
-        	${column.attrname},#end 
+     ${column.attrname},#end 
   	  </sql>
 
-	<select id="selectById" resultType="${className}VO">
+	<select id="selectById" resultType="${package}.entity.${className}VO">
 		select * from ${tableName} where ${pk.columnName} = #{value}
 	</select>
+	
+	<select id="list" resultMap="${classname}Map">
+		select * from ${tableName}
+	</select>
 
+
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from ${tableName} 
+	</select>
+	 
+	<insert id="insert" parameterType="${package}.entity.${className}VO"#if($pk.extra == 'auto_increment') useGeneratedKeys="true" keyProperty="$pk.attrname"#end>
+		insert into ${tableName}
+		(
+#foreach($column in $columns)
+#if($column.columnName != $pk.columnName || $pk.extra != 'auto_increment')
+			$column.columnName #if($velocityCount != $columns.size()), #end
+
+#end			
+#end
+		)
+		values
+		(
+#foreach($column in $columns)
+#if($column.columnName != $pk.columnName || $pk.extra != 'auto_increment')
+			#{$column.attrname}#if($velocityCount != $columns.size()), #end
+
+#end			
+#end
+		)
+	</insert>
+	 
+	<update id="updateById" parameterType="${package}.entity.${className}VO">
+		update ${tableName} 
+		<set>
+#foreach($column in $columns)
+#if($column.columnName != $pk.columnName)
+			<if test="$column.attrname != null"> $column.columnName = #{$column.attrname}#if($velocityCount != $columns.size()), #end</if>
+#end
+#end
+		</set>
+		where ${pk.columnName} = #{${pk.attrname}}
+	</update>
+	
+	<delete id="deleteById">
+		delete from ${tableName} where ${pk.columnName} = #{value}
+	</delete>
+	
+	<delete id="deleteByIds">
+		delete from ${tableName} where ${pk.columnName} in 
+		<foreach item="${pk.attrname}" collection="list" open="(" separator="," close=")">
+			#{${pk.attrname}}
+		</foreach>
+	</delete>
+
+</mapper>
+
+
+
+<!-- 可根据自己的需求，是否要使用 
 	<select id="list" resultType="${className}VO">
 		select * from ${tableName}
         <choose>
@@ -38,60 +96,11 @@
         
         
 #end
-        
+    
         
 		<if test="offset != null and limit != null">
 			limit #{offset}, #{limit}
 		</if>
 		
 	</select>
-	
- 	<select id="queryTotal" resultType="int">
-		select count(*) from ${tableName} 
-	</select>
-	 
-	<insert id="save" parameterType="${package}.entity.${className}Entity"#if($pk.extra == 'auto_increment') useGeneratedKeys="true" keyProperty="$pk.attrname"#end>
-		insert into ${tableName}
-		(
-#foreach($column in $columns)
-#if($column.columnName != $pk.columnName || $pk.extra != 'auto_increment')
-			'$column.columnName'#if($velocityCount != $columns.size()), #end
-
-#end			
-#end
-		)
-		values
-		(
-#foreach($column in $columns)
-#if($column.columnName != $pk.columnName || $pk.extra != 'auto_increment')
-			#{$column.attrname}#if($velocityCount != $columns.size()), #end
-
-#end			
-#end
-		)
-	</insert>
-	 
-	<update id="updateById" parameterType="${package}.entity.${className}Entity">
-		update ${tableName} 
-		<set>
-#foreach($column in $columns)
-#if($column.columnName != $pk.columnName)
-			<if test="$column.attrname != null">'$column.columnName' = #{$column.attrname}#if($velocityCount != $columns.size()), #end</if>
-#end
-#end
-		</set>
-		where ${pk.columnName} = #{${pk.attrname}}
-	</update>
-	
-	<delete id="deleteById">
-		delete from ${tableName} where ${pk.columnName} = #{value}
-	</delete>
-	
-	<delete id="deleteByIds">
-		delete from ${tableName} where ${pk.columnName} in 
-		<foreach item="${pk.attrname}" collection="array" open="(" separator="," close=")">
-			#{${pk.attrname}}
-		</foreach>
-	</delete>
-
-</mapper>
+	   --> 
